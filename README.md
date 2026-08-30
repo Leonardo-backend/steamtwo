@@ -28,9 +28,9 @@ O projeto foi significativamente expandido a partir da base original, adicionand
    - Barra de pesquisa integrada no cabeçalho com debounce de 200ms e cancelamento automático de requisições.
    - Dropdown com miniaturas das capas, gênero, índice SteamTwo e navegação imediata para o jogo.
 
-3. **🎮 Página Explorador por Gêneros (`/generos`)**:
-   - Nova view acessível pela navegação com cards dinâmicos para cada gênero (RPG, Ação, FPS, MOBA, Battle Royale, etc.).
-   - Endpoint `GET /api/genres` com contagem agregada de títulos e filtragem instantânea da grade de jogos.
+3. **🎮 Catálogo Unificado com Barra Compacta de Gêneros (`/jogos`)**:
+   - Barra enxuta de tags/chips com contagem por categoria e ícones temáticos integrada diretamente no topo do catálogo.
+   - Filtragem rápida e dinâmica em um clique sem ocupar espaço excessivo na tela, unindo busca, lojas e categorias em uma única visão fluida.
 
 4. **📈 Gráfico SVG de Evolução Histórica do Ranking**:
    - Componente vetorial interativo em SVG puro na página de detalhes de cada jogo (`/api/games/:slug/history`).
