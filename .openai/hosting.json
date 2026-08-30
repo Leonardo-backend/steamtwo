@@ -1,0 +1,11 @@
+{
+  "name": "steamtwo",
+  "version": "1",
+  "runtime": "worker",
+  "client": "dist/client",
+  "serverPort": 3001,
+  "routes": [
+    { "pattern": "/api/*", "target": "server", "port": 3001 },
+    { "pattern": "/*", "target": "client" }
+  ]
+}

@@ -1,0 +1,25 @@
+# dependências
+node_modules/
+.pnpm-store/
+
+# build
+dist/
+out/
+.vite/
+
+# ambiente e segredos (NUNCA commitar)
+.env
+.env.local
+.env.*.local
+*.log
+
+# dados em tempo de execução e caches temporários
+data/snapshots/
+*.zip
+
+# testes e cobertura
+coverage/
+
+# sistema operacional
+.DS_Store
+Thumbs.db

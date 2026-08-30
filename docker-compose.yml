@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: steamtwo
+      POSTGRES_PASSWORD: steamtwo
+      POSTGRES_DB: steamtwo
+    ports:
+      - "5432:5432"
+    volumes:
+      - steamtwo_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U steamtwo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  steamtwo_pgdata:
