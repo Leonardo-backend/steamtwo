@@ -151,6 +151,7 @@ export default function Rankings({ navigate, isFavorite, toggleFavorite }) {
                 const pos = item.rank || index + 1;
                 const score = item.index ?? 0;
                 const isFav = isFavorite ? isFavorite(item.slug) : false;
+                const gameName = item.name || item.title || item.slug;
 
                 return (
                   <tr key={item.slug || index} className="ranking-row" onClick={() => go(item.slug)}>
@@ -162,10 +163,10 @@ export default function Rankings({ navigate, isFavorite, toggleFavorite }) {
                     <td className="td-game">
                       <div className="game-thumb-cell">
                         <div className="thumb-wrap">
-                          <GameCover slug={item.slug} title={item.name} color={item.color} />
+                          <GameCover slug={item.slug} name={gameName} color={item.color} />
                         </div>
                         <div className="game-text">
-                          <span className="game-name-link">{item.name}</span>
+                          <span className="game-name-link">{gameName}</span>
                           {item.tagline && <span className="game-sub">{item.tagline}</span>}
                         </div>
                       </div>

@@ -169,7 +169,7 @@ export default function Compare({ navigate }) {
           <div className="compare-cards-header">
             <div className="compare-game-box left-box">
               <div className="box-cover" onClick={() => go(gameA.slug)}>
-                <GameCover slug={gameA.slug} title={gameA.name} color={gameA.color} />
+                <GameCover slug={gameA.slug} name={gameA.name} color={gameA.color} />
               </div>
               <div className="box-info">
                 <h2>{gameA.name}</h2>
@@ -188,7 +188,7 @@ export default function Compare({ navigate }) {
 
             <div className="compare-game-box right-box">
               <div className="box-cover" onClick={() => go(gameB.slug)}>
-                <GameCover slug={gameB.slug} title={gameB.name} color={gameB.color} />
+                <GameCover slug={gameB.slug} name={gameB.name} color={gameB.color} />
               </div>
               <div className="box-info">
                 <h2>{gameB.name}</h2>

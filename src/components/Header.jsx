@@ -155,7 +155,7 @@ export default function Header({
                       role="option"
                     >
                       <div className="sugg-cover">
-                        <GameCover slug={item.slug} title={item.name} color={item.color} />
+                        <GameCover slug={item.slug} name={item.name} color={item.color} />
                       </div>
                       <div className="sugg-info">
                         <span className="sugg-name">{item.name}</span>

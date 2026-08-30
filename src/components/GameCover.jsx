@@ -7,8 +7,9 @@ export function coverSrc(slug, name) {
   return covers[slug] || null;
 }
 
-export default function GameCover({ slug, name, color, className = "", imgClassName = "" }) {
+export default function GameCover({ slug, name, title, color, className = "", imgClassName = "" }) {
+  const gameName = name || title || slug || "Jogo";
   const src = covers[slug];
-  if (!src) return <ScoreTile name={name} color={color} />;
-  return <img className={`game-cover ${imgClassName}`.trim()} src={src} alt={`Capa de ${name}`} loading="lazy" />;
+  if (!src) return <ScoreTile name={gameName} color={color} />;
+  return <img className={`game-cover ${imgClassName}`.trim()} src={src} alt={`Capa de ${gameName}`} loading="lazy" />;
 }
