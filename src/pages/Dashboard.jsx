@@ -1,6 +1,20 @@
 import { useEffect, useState } from "react";
-import { Fire, CalendarBlank, Trophy, ChartLineUp, Storefront, HardDrives, ArrowUpRight } from "@phosphor-icons/react";
-import { getDashboard } from "../api.js";
+import {
+  Fire,
+  CalendarBlank,
+  Trophy,
+  ChartLineUp,
+  Storefront,
+  HardDrives,
+  ArrowUpRight,
+  Database,
+  ArrowsLeftRight,
+  Funnel,
+  Heart,
+  ArrowRight,
+  CheckCircle,
+} from "@phosphor-icons/react";
+import { getDashboard, getStats } from "../api.js";
 import heroImg from "../assets/hero-elden.jpg";
 import RankRow from "../components/RankRow.jsx";
 import Top5Card from "../components/Top5Card.jsx";
@@ -10,12 +24,18 @@ import Loading from "../components/Loading.jsx";
 
 const fmt = (n) => (n == null ? "—" : Math.round(n).toLocaleString("pt-BR"));
 
-export default function Dashboard({ navigate, openHow }) {
+export default function Dashboard({ navigate, openHow, favorites = [], toggleFavorite, isFavorite }) {
   const [data, setData] = useState(null);
+  const [stats, setStats] = useState(null);
 
   useEffect(() => {
     let alive = true;
-    getDashboard().then((d) => alive && setData(d));
+    Promise.all([getDashboard(), getStats()]).then(([d, s]) => {
+      if (alive) {
+        setData(d);
+        setStats(s);
+      }
+    });
     return () => {
       alive = false;
     };
@@ -40,6 +60,16 @@ export default function Dashboard({ navigate, openHow }) {
           </span>
           <div className="hero-badge-row">
             <LiveBadge live={live} />
+            {hero.slug && isFavorite && (
+              <button
+                className={"hero-fav-btn" + (isFavorite(hero.slug) ? " active" : "")}
+                onClick={() => toggleFavorite(hero)}
+                aria-label="Favoritar jogo em destaque"
+              >
+                <Heart size={16} weight={isFavorite(hero.slug) ? "fill" : "regular"} />
+                <span>{isFavorite(hero.slug) ? "Na minha lista" : "Salvar na lista"}</span>
+              </button>
+            )}
           </div>
           <h1 className="hero-title">{hero.name}</h1>
           <p className="hero-tagline">{hero.tagline}</p>
@@ -78,7 +108,84 @@ export default function Dashboard({ navigate, openHow }) {
         </div>
       </section>
 
-      {/* Faixa top 5 — agoraz */}
+      {/* Widget de Métricas do Sistema & Conexão PostgreSQL */}
+      {stats && (
+        <section className="section stats-banner-section">
+          <div className="stats-banner-card">
+            <div className="stat-item">
+              <span className="stat-item-label">
+                <Database size={16} /> Banco de Dados
+              </span>
+              <span className="stat-item-value">
+                {stats.db === "postgres" ? (
+                  <span className="db-connected-tag">
+                    <CheckCircle size={15} weight="fill" /> PostgreSQL Conectado
+                  </span>
+                ) : (
+                  <span className="db-fallback-tag">⚡ Modo Fallback / Offline</span>
+                )}
+              </span>
+            </div>
+
+            <div className="stat-item">
+              <span className="stat-item-label">📊 Jogos Monitorados</span>
+              <span className="stat-item-value highlight">{stats.gamesTotal} títulos</span>
+            </div>
+
+            <div className="stat-item">
+              <span className="stat-item-label">📸 Snapshots Históricos</span>
+              <span className="stat-item-value highlight">{stats.snapshotsTotal} coletas</span>
+            </div>
+
+            <div className="stat-item">
+              <span className="stat-item-label">🕒 Última Sincronização</span>
+              <span className="stat-item-value">
+                {stats.lastSync ? new Date(stats.lastSync).toLocaleDateString("pt-BR") : "Hoje"}
+              </span>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Atalhos Rápidos para Novas Funcionalidades */}
+      <section className="section feature-shortcuts-section">
+        <div className="feature-cards-grid">
+          <button className="feature-shortcut-card" onClick={() => navigate("/rankings")}>
+            <div className="feat-icon trophy-icon">
+              <Trophy size={24} weight="fill" />
+            </div>
+            <div className="feat-text">
+              <h3>Rankings Oficiais</h3>
+              <p>Classificação comparativa com filtros por período e loja.</p>
+            </div>
+            <ArrowRight size={18} className="feat-arrow" />
+          </button>
+
+          <button className="feature-shortcut-card" onClick={() => navigate("/generos")}>
+            <div className="feat-icon funnel-icon">
+              <Funnel size={24} weight="fill" />
+            </div>
+            <div className="feat-text">
+              <h3>Explorar Gêneros</h3>
+              <p>Descubra os líderes em RPG, FPS, MOBA, Ação e mais.</p>
+            </div>
+            <ArrowRight size={18} className="feat-arrow" />
+          </button>
+
+          <button className="feature-shortcut-card" onClick={() => navigate("/comparar")}>
+            <div className="feat-icon compare-icon">
+              <ArrowsLeftRight size={24} weight="fill" />
+            </div>
+            <div className="feat-text">
+              <h3>Comparador de Jogos</h3>
+              <p>Duelo estatístico lado a lado com barras visuais.</p>
+            </div>
+            <ArrowRight size={18} className="feat-arrow" />
+          </button>
+        </div>
+      </section>
+
+      {/* Faixa top 5 — agora */}
       <section className="section">
         <div className="section-head">
           <h2>

@@ -330,4 +330,97 @@ async function getDetail(slug) {
   };
 }
 
-export { getDashboard, getCatalog, getDetail };
+async function getStats() {
+  const dbUp = await isDbAvailable();
+  let dbGamesCount = 0;
+  let dbSnapshotsCount = 0;
+  let dbLastSync = null;
+
+  if (dbUp) {
+    try {
+      const gRes = await pool.query("SELECT COUNT(*) AS c FROM games");
+      dbGamesCount = parseInt(gRes.rows[0]?.c || "0", 10);
+      const sRes = await pool.query("SELECT COUNT(*) AS c, MAX(captured_at) AS last_sync FROM rank_snapshots");
+      dbSnapshotsCount = parseInt(sRes.rows[0]?.c || "0", 10);
+      dbLastSync = sRes.rows[0]?.last_sync || null;
+    } catch {
+      /* ignore */
+    }
+  }
+
+  const entries = await getEntries();
+  const snaps = await loadSnapshots(8);
+
+  return {
+    ok: true,
+    db: dbUp ? "postgres" : "fallback",
+    dbStatus: dbUp ? "up" : "down",
+    gamesTotal: dbGamesCount || entries.length,
+    snapshotsTotal: dbSnapshotsCount || snaps.length,
+    lastSync: dbLastSync || (snaps[snaps.length - 1]?.day ? snaps[snaps.length - 1].day : new Date().toISOString()),
+    live: true,
+    sources: [
+      { id: "steam", name: "Steam", available: true, count: entries.length },
+      { id: "epic", name: "Epic Games", available: false, count: 0 },
+      { id: "igdb", name: "IGDB", available: false, count: 0 },
+    ],
+    time: new Date().toISOString(),
+  };
+}
+
+async function searchGames(query = "") {
+  if (!query || String(query).trim().length < 1) return [];
+  const entries = await getEntries();
+  const q = String(query).toLowerCase().trim();
+  const list = entries.filter((e) => isGame({ appid: e.appid, name: e.name, slug: e.slug }));
+  const matches = list.filter((e) => e.name.toLowerCase().includes(q) || e.tagline.toLowerCase().includes(q));
+  return matches.slice(0, 8).map(toCatalogItem);
+}
+
+async function getGenresSummary() {
+  const entries = await getEntries();
+  const gamesList = entries.filter((e) => isGame({ appid: e.appid, name: e.name, slug: e.slug }));
+  const genreMap = new Map();
+  for (const g of gamesList) {
+    const rawGenres = g.genres && g.genres.length ? g.genres : [g.genre || "Outros"];
+    for (const item of rawGenres) {
+      const norm = normalizeGenre(item) || item;
+      const cur = genreMap.get(norm) || { genre: norm, count: 0, topGame: null, topScore: -1 };
+      cur.count += 1;
+      const score = g.steamRank ? normalizePosition(g.steamRank, TOP_LEAGUE) : 0;
+      if (score > cur.topScore) {
+        cur.topScore = score;
+        cur.topGame = { name: g.name, slug: g.slug, color: g.color };
+      }
+      genreMap.set(norm, cur);
+    }
+  }
+  return [...genreMap.values()].sort((a, b) => b.count - a.count || a.genre.localeCompare(b.genre));
+}
+
+async function getGameHistory(slug) {
+  const snaps = await loadSnapshots(14);
+  const detail = await getDetail(slug);
+  if (!detail) return null;
+
+  const history = snaps.map((s) => {
+    const entry = s.entries?.find((e) => e.slug === slug);
+    return {
+      date: s.day,
+      rank: entry?.rank ?? null,
+      players: entry?.players ?? null,
+      score: entry?.rank ? normalizePosition(entry.rank, TOP_LEAGUE) : null,
+    };
+  });
+
+  return {
+    slug,
+    name: detail.name,
+    history,
+    currentScore: detail.index,
+    peakPlayers: detail.peak,
+    currentPlayers: detail.players,
+  };
+}
+
+export { getDashboard, getCatalog, getDetail, getStats, searchGames, getGenresSummary, getGameHistory };
