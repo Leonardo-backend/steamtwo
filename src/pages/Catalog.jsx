@@ -12,7 +12,7 @@ const STORES = [
   { id: "both", label: "Ambas", icon: <Funnel size={16} weight="fill" /> },
 ];
 
-export default function Catalog({ navigate }) {
+export default function Catalog({ navigate, favorites = [], toggleFavorite, isFavorite }) {
   const [query, setQuery] = useState({ q: "", store: "", genre: "" });
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -117,7 +117,13 @@ export default function Catalog({ navigate }) {
       ) : data && data.items.length > 0 ? (
         <div className="game-grid">
           {data.items.map((item) => (
-            <GameCard key={item.slug} item={item} onClick={go} />
+            <GameCard
+              key={item.slug}
+              item={item}
+              onClick={go}
+              isFavorite={isFavorite ? isFavorite(item.slug) : false}
+              onToggleFavorite={toggleFavorite ? () => toggleFavorite(item) : null}
+            />
           ))}
         </div>
       ) : (
