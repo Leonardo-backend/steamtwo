@@ -133,10 +133,10 @@ def main():
     r_gh.font.color.rgb = RGBColor(15, 23, 42)
     
     members = [
-        "• Raul [Sobrenome]",
-        "• Leonardo [Sobrenome]",
-        "• Inaiad [Sobrenome]",
-        "• Douglas [Sobrenome]"
+        "• Douglas Ichiro Iwamoto",
+        "• Inaiad dos Santos Souza",
+        "• Raul de Oliveira Silva",
+        "• Leonardo Cesar da Silva"
     ]
     for m in members:
         p_m = doc.add_paragraph()

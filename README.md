@@ -3,10 +3,10 @@
 > **Trabalho Acadêmico — Evolução e Integração Full-Stack (Front-end, Back-end e Banco de Dados)**  
 > **Repositório:** [https://github.com/Leonardo-backend/steamtwo](https://github.com/Leonardo-backend/steamtwo)  
 > **Integrantes da Equipe:**  
-> - Raul [Sobrenome]  
-> - Leonardo [Sobrenome]  
-> - Inaiad [Sobrenome]  
-> - Douglas [Sobrenome]  
+> - Douglas Ichiro Iwamoto  
+> - Inaiad dos Santos Souza  
+> - Raul de Oliveira Silva  
+> - Leonardo Cesar da Silva  
 
 ---
 
