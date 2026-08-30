@@ -1,23 +1,42 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, Storefront, SteamLogo, Trophy, ChartLineUp, HardDrive } from "@phosphor-icons/react";
-import { getGame } from "../api.js";
+import {
+  ArrowLeft,
+  Storefront,
+  SteamLogo,
+  Trophy,
+  ChartLineUp,
+  HardDrive,
+  Heart,
+  ArrowsLeftRight,
+  Sparkle,
+} from "@phosphor-icons/react";
+import { getGame, getGameHistory, getRelatedGames } from "../api.js";
 import GameCover from "../components/GameCover.jsx";
+import RankingChart from "../components/RankingChart.jsx";
+import GameCard from "../components/GameCard.jsx";
 import { covers } from "../covers.js";
 import Loading from "../components/Loading.jsx";
 
 const fmt = (n) => (n == null ? "—" : Math.round(n).toLocaleString("pt-BR"));
 
-export default function Detail({ slug, navigate }) {
+export default function Detail({ slug, navigate, isFavorite, toggleFavorite }) {
   const [game, setGame] = useState(null);
+  const [historyData, setHistoryData] = useState(null);
+  const [related, setRelated] = useState([]);
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
     let alive = true;
-    getGame(slug)
-      .then((g) => {
+    Promise.all([getGame(slug), getGameHistory(slug), getRelatedGames(slug)])
+      .then(([g, hist, rel]) => {
         if (!alive) return;
-        if (g && g.slug) setGame(g);
-        else setNotFound(true);
+        if (g && g.slug) {
+          setGame(g);
+          setHistoryData(hist);
+          setRelated(rel || []);
+        } else {
+          setNotFound(true);
+        }
       })
       .catch(() => alive && setNotFound(true));
     return () => {
@@ -29,7 +48,9 @@ export default function Detail({ slug, navigate }) {
     return (
       <div className="page-shell empty">
         <p>Jogo não encontrado.</p>
-        <button className="cta" onClick={() => navigate("/jogos")}>Voltar ao catálogo</button>
+        <button className="cta" onClick={() => navigate("/jogos")}>
+          Voltar ao catálogo
+        </button>
       </div>
     );
   }
@@ -44,15 +65,44 @@ export default function Detail({ slug, navigate }) {
 
   const STORE_LABEL = { steam: "Steam", epic: "Epic Games", both: "Steam + Epic" };
   const storeIcon = game.store === "epic" ? <Storefront size={20} weight="fill" /> : <SteamLogo size={20} weight="fill" />;
+  const favorited = isFavorite ? isFavorite(game.slug) : false;
 
   return (
     <div className="detail">
-      <div className="detail-banner" style={{ backgroundColor: game.color, backgroundImage: covers[game.slug] ? `url(${covers[game.slug]})` : undefined }}>
+      <div
+        className="detail-banner"
+        style={{
+          backgroundColor: game.color,
+          backgroundImage: covers[game.slug] ? `url(${covers[game.slug]})` : undefined,
+        }}
+      >
         <div className="detail-banner-scrim" />
         <div className="page-shell detail-top">
-          <button className="back" onClick={() => navigate("/jogos")}>
-            <ArrowLeft size={18} /> Voltar ao catálogo
-          </button>
+          <div className="detail-nav-row">
+            <button className="back" onClick={() => navigate("/jogos")}>
+              <ArrowLeft size={18} /> Voltar ao catálogo
+            </button>
+            <div className="detail-top-actions">
+              <button
+                className={"detail-fav-btn" + (favorited ? " active" : "")}
+                onClick={() => toggleFavorite && toggleFavorite(game)}
+                aria-label={favorited ? "Remover dos favoritos" : "Salvar na minha lista"}
+              >
+                <Heart size={18} weight={favorited ? "fill" : "bold"} />
+                <span>{favorited ? "Na Minha Lista" : "Salvar na Lista"}</span>
+              </button>
+
+              <button
+                className="detail-compare-btn"
+                onClick={() => navigate(`/comparar`)}
+                title="Comparar este jogo com outro"
+              >
+                <ArrowsLeftRight size={18} />
+                <span>Comparar</span>
+              </button>
+            </div>
+          </div>
+
           <div className="detail-title">
             <div className="detail-thumb">
               <GameCover slug={game.slug} name={game.name} color="rgba(255,255,255,0.16)" />
@@ -72,7 +122,9 @@ export default function Detail({ slug, navigate }) {
 
           <div className="detail-genres">
             {game.genres?.map((g) => (
-              <span key={g} className="tag">{g}</span>
+              <span key={g} className="tag">
+                {g}
+              </span>
             ))}
           </div>
 
@@ -93,6 +145,14 @@ export default function Detail({ slug, navigate }) {
             </div>
           </div>
 
+          {/* Gráfico SVG de Evolução Histórica do Ranking */}
+          <div className="detail-chart-section">
+            <h3 className="detail-h3">
+              <ChartLineUp size={20} weight="fill" /> Evolução do Índice SteamTwo
+            </h3>
+            <RankingChart data={historyData?.history} />
+          </div>
+
           <h3 className="detail-h3">
             <ChartLineUp size={20} weight="fill" /> Composição do índice
           </h3>
@@ -111,6 +171,26 @@ export default function Detail({ slug, navigate }) {
               </div>
             ))}
           </div>
+
+          {/* Seção Você Também Pode Gostar / Jogos Relacionados */}
+          {related.length > 0 && (
+            <div className="related-games-section">
+              <h3 className="detail-h3">
+                <Sparkle size={20} weight="fill" /> Você também pode gostar ({game.genre})
+              </h3>
+              <div className="related-grid">
+                {related.map((item) => (
+                  <GameCard
+                    key={item.slug}
+                    item={item}
+                    onClick={(s) => navigate(`/jogos/${s}`)}
+                    isFavorite={isFavorite ? isFavorite(item.slug) : false}
+                    onToggleFavorite={toggleFavorite ? () => toggleFavorite(item) : null}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <aside className="detail-aside">
@@ -123,12 +203,12 @@ export default function Detail({ slug, navigate }) {
               {storeIcon} {STORE_LABEL[game.store]}
             </p>
             <p className="info-note">
-              Dados de jogadores e posição coletados ao vivo da Steam. O índice combina as fontes em que o
-              jogo aparece — a Epic não publica contagem de jogadores, por isso é excluída do índice.
+              Dados de jogadores e posição coletados ao vivo da Steam. O índice combina as fontes em que o jogo
+              aparece — a Epic não publica contagem de jogadores, por isso é excluída do índice.
             </p>
             <a className="cta full" href={game.storeLink} target="_blank" rel="noreferrer">
               <Trophy size={18} />
-              <span>Abrir na loja</span>
+              <span>Abrir na loja oficial</span>
             </a>
           </div>
         </aside>
