@@ -284,8 +284,8 @@ async function pgSaveSnapshot(snap) {
         ("1. Endpoint /api/stats e Widget de Métricas no Dashboard",
          "Novo endpoint que agrega métricas em tempo real do banco de dados (total de jogos cadastrados, snapshots válidos, status de conexão PostgreSQL e data da última sincronização). No front-end, um banner no topo do Dashboard exibe cards informativos comprovando a integração viva com a base."),
         
-        ("2. Busca com Autocomplete em Tempo Real no Header",
-         "Mecanismo de busca instantânea integrado no cabeçalho com debounce de 200ms e AbortController. Ao digitar, o dropdown exibe miniaturas das capas dos jogos, nome, gênero, índice SteamTwo e permite navegar imediatamente pelo teclado (Enter/Esc) ou clique."),
+        ("2. Busca Espaçosa com Preview Rico de Resultados no Header",
+         "Barra de pesquisa integrada e ampliada no cabeçalho com debounce de 200ms e AbortController. Ao digitar, o dropdown exibe preview rico com miniatura da capa oficial, nome, posição no ranking, resumo/tagline, tags de gênero, loja, jogadores ao vivo e índice SteamTwo."),
         
         ("3. Catálogo Unificado com Barra Compacta de Gêneros (/jogos)",
          "Barra enxuta de tags/chips interativas com ícones temáticos e contagem por categoria integrada diretamente no topo do catálogo de jogos. O endpoint /api/genres provê a contagem dinâmica, permitindo filtragem instantânea em um clique sem ocupar espaço excessivo na tela e mantendo os cards de jogos em evidência total."),
@@ -332,7 +332,7 @@ async function pgSaveSnapshot(snap) {
         ("Douglas", "chore", "inicializacao da estrutura base do projeto SteamTwo com PostgreSQL e Docker"),
         ("Leonardo", "feat(api)", "endpoint /api/stats, metricas do banco e script de seed automatizado"),
         ("Raul", "feat(busca)", "autocomplete em tempo real com debounce e navegacao no cabecalho"),
-        ("Inaiad", "feat(generos)", "pagina de exploracao por categorias e endpoint /api/genres"),
+        ("Inaiad", "feat(generos)", "endpoint /api/genres e agregacao de categorias de jogos"),
         ("Douglas", "feat(grafico)", "grafico vetorial SVG de evolucao historica e recomendacoes na tela de detalhes"),
         ("Raul", "feat(favoritos)", "sistema de colecao Minha Lista com persistencia no localStorage e botoes nos cards"),
         ("Leonardo", "feat(comparador)", "pagina de duelo estatistico lado a lado com barras visuais e /api/compare"),
@@ -361,16 +361,17 @@ async function pgSaveSnapshot(snap) {
     h4.paragraph_format.space_before = Pt(14)
     
     doc.add_paragraph(
-        "Abaixo estão registradas as evidências visuais das páginas e funcionalidades em pleno funcionamento:"
+        "Abaixo estão registradas as evidências visuais em alta resolução das páginas e funcionalidades com dados reais em pleno funcionamento:"
     )
     
     screenshots = [
         ("screenshots/dashboard.png", "Figura 1: Dashboard principal com Hero em destaque, Banner de Métricas PostgreSQL e Atalhos Rápidos."),
-        ("screenshots/catalog_genres.png", "Figura 2: Catálogo de Jogos unificado com barra compacta e enxuta de filtros por gênero."),
-        ("screenshots/rankings.png", "Figura 3: Página de Rankings Oficiais com abas de período, filtros de loja e tabela interativa."),
-        ("screenshots/compare.png", "Figura 4: Comparador de Jogos com duelo estatístico, barras de progresso e destaque de vencedores."),
-        ("screenshots/detail.png", "Figura 5: Página de Detalhes com Gráfico SVG de Evolução Histórica e recomendações de jogos."),
-        ("screenshots/mylist.png", "Figura 6: Página Minha Lista com jogos favoritados pelo usuário e persistência local.")
+        ("screenshots/catalog_genres.png", "Figura 2: Catálogo de Jogos unificado com barra compacta e enxuta de filtros por categoria."),
+        ("screenshots/search_preview.png", "Figura 3: Busca ampliada no cabeçalho com menu suspenso de preview rico de resultados."),
+        ("screenshots/rankings.png", "Figura 4: Rankings Oficiais com abas de período, filtros de loja e medalhas de pódio."),
+        ("screenshots/compare.png", "Figura 5: Comparador de Jogos com duelo estatístico, barras de progresso e destaque de vencedores."),
+        ("screenshots/detail.png", "Figura 6: Página de Detalhes com Gráfico SVG de Evolução Histórica do Ranking."),
+        ("screenshots/mylist.png", "Figura 7: Página Minha Lista com jogos favoritados pelo usuário e persistência local.")
     ]
     
     for img_path, caption in screenshots:
