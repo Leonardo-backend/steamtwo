@@ -936,6 +936,93 @@ a {
   cursor: pointer;
 }
 
+/* ---------- Compact Genre Bar (Integrated in Catalog) ---------- */
+.compact-genre-bar-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+  background: var(--surface-2);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+}
+
+.compact-genre-bar-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.compact-genre-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.compact-genre-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.compact-genre-chip:hover {
+  border-color: var(--accent);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+.compact-genre-chip.active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 10px rgba(43, 255, 136, 0.15);
+}
+
+.genre-chip-icon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.genre-chip-name {
+  font-weight: 600;
+}
+
+.genre-chip-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-3);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 999px;
+  min-width: 18px;
+  transition: all 0.15s ease;
+}
+
+.compact-genre-chip.active .genre-chip-badge {
+  background: rgba(43, 255, 136, 0.2);
+  color: var(--accent);
+}
+
 /* ---------- Game grid ---------- */
 .game-grid {
   display: grid;

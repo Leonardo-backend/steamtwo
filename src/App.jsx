@@ -16,14 +16,11 @@ export function parsePath(pathname) {
   const clean = pathname.replace(/^\/+/, "").split("?")[0];
   const parts = clean.split("/").filter(Boolean);
 
-  if (parts[0] === "jogos" || parts[0] === "catalogo") {
+  if (parts[0] === "jogos" || parts[0] === "catalogo" || parts[0] === "generos") {
     return parts[1] ? { name: "detail", slug: decodeURIComponent(parts[1]) } : { name: "catalog" };
   }
   if (parts[0] === "rankings") {
     return { name: "rankings" };
-  }
-  if (parts[0] === "generos") {
-    return { name: "genres" };
   }
   if (parts[0] === "comparar") {
     return { name: "compare" };

@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import { MagnifyingGlass, X, Storefront, SteamLogo, Funnel } from "@phosphor-icons/react";
-import { getCatalog } from "../api.js";
+import { MagnifyingGlass, X, Storefront, SteamLogo, Funnel, Sparkle } from "@phosphor-icons/react";
+import { getCatalog, getGenres } from "../api.js";
 import GameCard from "../components/GameCard.jsx";
 import LiveBadge from "../components/LiveBadge.jsx";
 import { SkeletonGrid } from "../components/Loading.jsx";
@@ -12,12 +12,49 @@ const STORES = [
   { id: "both", label: "Ambas", icon: <Funnel size={16} weight="fill" /> },
 ];
 
+const GENRE_ICONS = {
+  RPG: "🗡️",
+  Ação: "⚡",
+  FPS: "🎯",
+  MOBA: "⚔️",
+  "Battle Royale": "👑",
+  Tiro: "💥",
+  Competitivo: "🏆",
+  "Mundo aberto": "🌍",
+  Party: "🎉",
+  Casual: "🎲",
+  Multijogador: "👥",
+  Estratégia: "🧠",
+  Aventura: "🧭",
+  Simulação: "🚀",
+  Outros: "🎮",
+};
+
 export default function Catalog({ navigate, favorites = [], toggleFavorite, isFavorite }) {
-  const [query, setQuery] = useState({ q: "", store: "", genre: "" });
+  // Inicializa com parâmetros da URL se existirem
+  const initialParams = new URLSearchParams(window.location.search);
+  const [query, setQuery] = useState({
+    q: initialParams.get("q") || "",
+    store: initialParams.get("store") || "",
+    genre: initialParams.get("genre") || "",
+  });
+
+  const [genresData, setGenresData] = useState([]);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState(query.q);
   const timer = useRef(null);
+
+  // Carrega lista agregada de gêneros para a barra compacta
+  useEffect(() => {
+    let alive = true;
+    getGenres().then((g) => {
+      if (alive) setGenresData(g || []);
+    });
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   useEffect(() => {
     const q = query.q;
@@ -40,21 +77,32 @@ export default function Catalog({ navigate, favorites = [], toggleFavorite, isFa
     timer.current = setTimeout(() => setQuery((p) => ({ ...p, q: value })), 300);
   };
 
-  const go = (slug) => navigate(`/jogos/${slug}`);
-  const genres = data?.genres || [];
+  const handleGenreClick = (genreName) => {
+    setQuery((p) => ({
+      ...p,
+      genre: p.genre === genreName ? "" : genreName, // desmarca se clicar de novo
+    }));
+  };
 
+  const go = (slug) => navigate(`/jogos/${slug}`);
   const isFiltered = query.q || query.store || query.genre;
 
   return (
     <div className="catalog page-shell">
       <div className="page-title">
-        <h1>Catálogo de jogos</h1>
-        <p className="page-title-row">
-          {data ? `${data.total} jogos monitorados` : "Carregando…"}
-          <LiveBadge live={data?.live} />
-        </p>
+        <div className="title-left">
+          <span className="hero-kicker">
+            <Sparkle size={16} weight="fill" /> Catálogo & Categorias
+          </span>
+          <h1>Catálogo de Jogos</h1>
+          <p className="page-title-row">
+            {data ? `${data.total} jogos encontrados` : "Carregando títulos…"}
+            <LiveBadge live={data?.live} />
+          </p>
+        </div>
       </div>
 
+      {/* Toolbar Principal: Busca + Filtro de Loja */}
       <div className="toolbar">
         <div className="search">
           <MagnifyingGlass size={20} />
@@ -85,19 +133,7 @@ export default function Catalog({ navigate, favorites = [], toggleFavorite, isFa
               </button>
             ))}
           </div>
-          <select
-            className="genre-filter"
-            value={query.genre}
-            onChange={(e) => setQuery((p) => ({ ...p, genre: e.target.value }))}
-            aria-label="Filtrar por gênero"
-          >
-            <option value="">Todos os gêneros</option>
-            {genres.map((g) => (
-              <option key={g} value={g}>
-                {g}
-              </option>
-            ))}
-          </select>
+
           {isFiltered && (
             <button
               className="chip clear-filter"
@@ -106,12 +142,45 @@ export default function Catalog({ navigate, favorites = [], toggleFavorite, isFa
                 setSearch("");
               }}
             >
-              Limpar
+              Limpar filtros
             </button>
           )}
         </div>
       </div>
 
+      {/* Barra Compacta e Enxuta de Gêneros Integrada */}
+      <div className="compact-genre-bar-container">
+        <div className="compact-genre-bar-label">
+          <Funnel size={14} weight="fill" />
+          <span>Filtrar por Gênero:</span>
+        </div>
+        <div className="compact-genre-chips" role="group" aria-label="Filtro rápido por gênero">
+          <button
+            className={"compact-genre-chip" + (!query.genre ? " active" : "")}
+            onClick={() => setQuery((p) => ({ ...p, genre: "" }))}
+          >
+            <span>🎮 Todos</span>
+          </button>
+          {genresData.map((g) => {
+            const isSelected = query.genre === g.genre;
+            const icon = GENRE_ICONS[g.genre] || "🎮";
+            return (
+              <button
+                key={g.genre}
+                className={"compact-genre-chip" + (isSelected ? " active" : "")}
+                onClick={() => handleGenreClick(g.genre)}
+                aria-pressed={isSelected}
+              >
+                <span className="genre-chip-icon">{icon}</span>
+                <span className="genre-chip-name">{g.genre}</span>
+                <span className="genre-chip-badge">{g.count}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Grid de Jogos ou Skeleton */}
       {loading ? (
         <SkeletonGrid count={8} />
       ) : data && data.items.length > 0 ? (
@@ -129,9 +198,15 @@ export default function Catalog({ navigate, favorites = [], toggleFavorite, isFa
       ) : (
         <div className="empty">
           <MagnifyingGlass size={40} />
-          <p>Nenhum jogo encontrado para esses filtros.</p>
-          <button className="cta" onClick={() => { setQuery({ q: "", store: "", genre: "" }); setSearch(""); }}>
-            Limpar filtros
+          <p>Nenhum jogo encontrado para os filtros selecionados.</p>
+          <button
+            className="cta"
+            onClick={() => {
+              setQuery({ q: "", store: "", genre: "" });
+              setSearch("");
+            }}
+          >
+            Limpar todos os filtros
           </button>
         </div>
       )}

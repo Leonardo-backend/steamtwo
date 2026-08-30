@@ -161,13 +161,13 @@ export default function Dashboard({ navigate, openHow, favorites = [], toggleFav
             <ArrowRight size={18} className="feat-arrow" />
           </button>
 
-          <button className="feature-shortcut-card" onClick={() => navigate("/generos")}>
+          <button className="feature-shortcut-card" onClick={() => navigate("/jogos")}>
             <div className="feat-icon funnel-icon">
               <Funnel size={24} weight="fill" />
             </div>
             <div className="feat-text">
-              <h3>Explorar Gêneros</h3>
-              <p>Descubra os líderes em RPG, FPS, MOBA, Ação e mais.</p>
+              <h3>Catálogo & Categorias</h3>
+              <p>Explore o catálogo completo com filtros rápidos por gênero e loja.</p>
             </div>
             <ArrowRight size={18} className="feat-arrow" />
           </button>

@@ -104,9 +104,8 @@ export default function Header({
 
         <nav className="nav" aria-label="Navegação principal">
           {link("/", "Início", "home")}
-          {link("/jogos", "Catálogo", "catalog")}
+          {link("/jogos", "Catálogo & Gêneros", "catalog")}
           {link("/rankings", "Rankings", "rankings", <ChartLineUp size={15} />)}
-          {link("/generos", "Gêneros", "genres", <Funnel size={15} />)}
           {link("/comparar", "Comparar", "compare", <ArrowsLeftRight size={15} />)}
           <button
             className={"nav-link" + (current === "mylist" ? " active" : "")}
