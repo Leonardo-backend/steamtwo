@@ -10,6 +10,17 @@
 
 ---
 
+## 👤 Minha contribuição (Leonardo Cesar)
+
+Neste projeto em equipe, fiquei responsável por:
+
+- **Endpoint `/api/stats` e seed do banco** — métricas agregadas do PostgreSQL (jogos monitorados, snapshots, status da conexão) e o script `npm run db:seed`. ([c6b1424](https://github.com/Leonardo-backend/steamtwo/commit/c6b1424a8b8856f47f6368ecf7688ff3486c2786))
+- **Comparador de jogos** — página `/comparar` e endpoint `GET /api/compare?a=...&b=...`, com barras comparativas por métrica. ([568cea3](https://github.com/Leonardo-backend/steamtwo/commit/568cea329d42a1143442e896e0fa9175eda1513f))
+- **Suíte de testes automatizados** — testes de API, domínio e integrações com Vitest, Supertest e pg-mem (banco PostgreSQL simulado em memória). ([04cb356](https://github.com/Leonardo-backend/steamtwo/commit/04cb3565b81760c9a6fd9b97ecc838a79de0c32e))
+- **Busca no cabeçalho** — ampliação da barra de busca e dropdown com prévia dos resultados. ([dbdc261](https://github.com/Leonardo-backend/steamtwo/commit/dbdc2615a138f53170d1ec86ac83bc752f24a28a))
+
+---
+
 ## 🎮 Sobre o Projeto
 
 O **SteamTwo** é uma plataforma analítica para acompanhamento de popularidade, rankings e métricas de engajamento de jogos digitais (Steam e Epic Games). O sistema consolida dados em tempo real, mantém histórico diário persistido no **PostgreSQL**, e disponibiliza uma interface moderna, responsiva e interativa em **React 19**.
