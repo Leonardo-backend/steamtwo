@@ -1,148 +1,112 @@
-# SteamTwo — Plataforma de Monitoramento e Análise de Jogos
+# SteamTwo
+### Game analytics · Node.js REST API · PostgreSQL
 
-> **Trabalho Acadêmico — Evolução e Integração Full-Stack (Front-end, Back-end e Banco de Dados)**  
-> **Repositório:** [https://github.com/Leonardo-backend/steamtwo](https://github.com/Leonardo-backend/steamtwo)  
-> **Integrantes da Equipe:**  
-> - Douglas Ichiro Iwamoto  
-> - Inaiad dos Santos Souza  
-> - Raul de Oliveira Silva  
-> - Leonardo Cesar da Silva  
+[Português — detailed project documentation](README.pt-BR.md)
 
----
+SteamTwo is an academic team project for exploring game rankings, comparing titles and tracking historical metrics. This repository extends an existing codebase; it is a fork of [DavidSilvaProg/steamtwo](https://github.com/DavidSilvaProg/steamtwo).
 
-## 👤 Minha contribuição (Leonardo Cesar)
+The portfolio focus is the Express API, relational persistence, database statistics and automated tests.
 
-Neste projeto em equipe, fiquei responsável por:
+## Leonardo Cesar da Silva's contributions
 
-- **Endpoint `/api/stats` e seed do banco** — métricas agregadas do PostgreSQL (jogos monitorados, snapshots, status da conexão) e o script `npm run db:seed`. ([c6b1424](https://github.com/Leonardo-backend/steamtwo/commit/c6b1424a8b8856f47f6368ecf7688ff3486c2786))
-- **Comparador de jogos** — página `/comparar` e endpoint `GET /api/compare?a=...&b=...`, com barras comparativas por métrica. ([568cea3](https://github.com/Leonardo-backend/steamtwo/commit/568cea329d42a1143442e896e0fa9175eda1513f))
-- **Suíte de testes automatizados** — testes de API, domínio e integrações com Vitest, Supertest e pg-mem (banco PostgreSQL simulado em memória). ([04cb356](https://github.com/Leonardo-backend/steamtwo/commit/04cb3565b81760c9a6fd9b97ecc838a79de0c32e))
-- **Busca no cabeçalho** — ampliação da barra de busca e dropdown com prévia dos resultados. ([dbdc261](https://github.com/Leonardo-backend/steamtwo/commit/dbdc2615a138f53170d1ec86ac83bc752f24a28a))
+| Contribution | Implementation | Evidence |
+| --- | --- | --- |
+| Database metrics and seed data | `GET /api/stats`, PostgreSQL aggregate queries and `scripts/seed.js` | [c6b1424](https://github.com/Leonardo-backend/steamtwo/commit/c6b1424a8b8856f47f6368ecf7688ff3486c2786) |
+| Game comparison | Comparison page and `GET /api/compare?a=...&b=...` | [568cea3](https://github.com/Leonardo-backend/steamtwo/commit/568cea329d42a1143442e896e0fa9175eda1513f) |
+| Automated tests | API, domain and integration tests using Vitest, Supertest and pg-mem | [04cb356](https://github.com/Leonardo-backend/steamtwo/commit/04cb3565b81760c9a6fd9b97ecc838a79de0c32e) |
+| Search interface | Header search and result preview dropdown | [dbdc261](https://github.com/Leonardo-backend/steamtwo/commit/dbdc2615a138f53170d1ec86ac83bc752f24a28a) |
 
----
+Team: Douglas Ichiro Iwamoto, Inaiad dos Santos Souza, Raul de Oliveira Silva and Leonardo Cesar da Silva. The contribution table identifies Leonardo's work; the full application is a collaborative project.
 
-## 🎮 Sobre o Projeto
+## Stack and architecture
 
-O **SteamTwo** é uma plataforma analítica para acompanhamento de popularidade, rankings e métricas de engajamento de jogos digitais (Steam e Epic Games). O sistema consolida dados em tempo real, mantém histórico diário persistido no **PostgreSQL**, e disponibiliza uma interface moderna, responsiva e interativa em **React 19**.
+| Layer | Technology | Location |
+| --- | --- | --- |
+| HTTP API | Node.js, JavaScript ES modules, Express 5 | `server/index.js` |
+| Database | PostgreSQL 17, node-postgres connection pool | `server/db.js`, `server/persistence.js` |
+| Schema and seed | node-pg-migrate, seed script | `migrations/`, `scripts/seed.js` |
+| Collection and jobs | Steam data collection and scheduled snapshots | `server/collectors/`, `server/jobs/` |
+| UI | React 19, Vite | `src/` |
+| Tests | Vitest, Supertest, pg-mem | `tests/` |
+| Local database environment | Docker Compose | `docker-compose.yml` |
 
----
+The application includes fallback data when external sources or the database are unavailable. A working demo does not necessarily mean PostgreSQL is connected or that displayed history is live. Check `/api/health` and `/api/stats` when evaluating the data source.
 
-## ✨ Melhorias Autorais e Novas Funcionalidades Implementadas
+## Run locally
 
-O projeto foi significativamente expandido a partir da base original, adicionando páginas completas, novos endpoints de API e recursos avançados de usabilidade:
-
-1. **📊 Endpoint `/api/stats` e Widget de Métricas no Dashboard**:
-   - Novo endpoint que consulta métricas agregadas do PostgreSQL (`games`, `rank_snapshots`) e status de conexão.
-   - Painel visual no topo do Dashboard exibindo total de jogos monitorados, snapshots históricos e status da base de dados.
-
-2. **🔍 Busca com Autocomplete em Tempo Real**:
-   - Barra de pesquisa integrada no cabeçalho com debounce de 200ms e cancelamento automático de requisições.
-   - Dropdown com miniaturas das capas, gênero, índice SteamTwo e navegação imediata para o jogo.
-
-3. **🎮 Catálogo Unificado com Barra Compacta de Gêneros (`/jogos`)**:
-   - Barra enxuta de tags/chips com contagem por categoria e ícones temáticos integrada diretamente no topo do catálogo.
-   - Filtragem rápida e dinâmica em um clique sem ocupar espaço excessivo na tela, unindo busca, lojas e categorias em uma única visão fluida.
-
-4. **📈 Gráfico SVG de Evolução Histórica do Ranking**:
-   - Componente vetorial interativo em SVG puro na página de detalhes de cada jogo (`/api/games/:slug/history`).
-   - Exibe a curva de evolução dos scores diários, linhas de grade, preenchimento em gradiente e tooltips informativas ao passar o mouse.
-
-5. **❤️ Sistema de Favoritos e Página "Minha Lista" (`/minha-lista`)**:
-   - Botão de favoritar (coração) disponível em todos os cards, no topo do dashboard e na tela de detalhes.
-   - Persistência automática no `localStorage` do navegador e contador dinâmico em badge no menu principal.
-
-6. **⚖️ Página Comparador de Jogos (`/comparar`)**:
-   - Duelo estatístico lado a lado entre quaisquer dois títulos do catálogo (`GET /api/compare?a=...&b=...`).
-   - Barras visuais comparativas destacando o vencedor em: Índice SteamTwo, Jogadores Simultâneos (Steam), Pico Histórico e Posição no Ranking.
-
-7. **🌙☀️ Alternador de Tema Claro e Escuro (Light / Dark Mode)**:
-   - Suporte completo a tema claro e escuro implementado via tokens CSS (`:root[data-theme="light"]` e `:root[data-theme="dark"]`).
-   - Botão de alternância no cabeçalho com persistência da preferência do usuário no `localStorage`.
-
-8. **🏆 Rankings Interativos com Filtros por Período e Loja (`/rankings`)**:
-   - Tabela oficial de classificação com seleção de períodos (*Agora*, *Última Semana*, *De Sempre*) e filtro por loja (*Steam*, *Epic Games*).
-   - Medalhas visuais (ouro, prata, bronze), mini barras de progresso e atalho para favoritar diretamente da tabela.
-
-9. **🌱 Script de Seed Automatizado (`npm run db:seed`)**:
-   - Popula a base PostgreSQL com o catálogo completo e histórico inicial de snapshots de ranking com 1 comando.
-
----
-
-## 🛠️ Stack Tecnológica
-
-| Camada | Tecnologia | Detalhes |
-|---|---|---|
-| **Front-end** | React 19, Vite 6, CSS puro modular | Design responsivo, temas Claro/Escuro, SVG nativo |
-| **Ícones** | `@phosphor-icons/react` | Ícones modernos e consistentes |
-| **Back-end** | Node.js (ES Modules), Express 5 | API RESTful modular, endpoints validados |
-| **Banco de Dados** | PostgreSQL 17 via `pg` (node-postgres) | Tabelas relacionais, índices e histórico imutável |
-| **Migrações** | `node-pg-migrate` | Gerenciamento versionado de schema |
-| **Testes** | Vitest, Supertest, pg-mem | Testes de integração, domínio e APIs |
-| **Container** | Docker Compose | Ambiente PostgreSQL isolado e reprodutível |
-
----
-
-## 🚀 Como Executar o Projeto
-
-### Pré-requisitos
-- **Node.js** v20 ou superior
-- **Docker e Docker Compose** (ou PostgreSQL 17 instalado localmente)
-
-### Passo a Passo
+Use Node.js compatible with the pinned dependencies; Node.js 22.12+ is a suitable baseline for the Vite toolchain. Docker Compose starts **PostgreSQL**, while the API and UI run as separate Node.js processes.
 
 ```bash
-# 1. Clone o repositório
 git clone https://github.com/Leonardo-backend/steamtwo.git
 cd steamtwo
-
-# 2. Instale as dependências
-npm install
-
-# 3. Configure as variáveis de ambiente
+npm ci
 cp .env.example .env
-
-# 4. Inicie o PostgreSQL (Docker Compose)
 docker compose up -d
-
-# 5. Execute as migrações no banco
 npm run db:migrate
-
-# 6. Popule o banco com dados iniciais (Seed)
 npm run db:seed
+```
 
-# 7. Inicie a API e a aplicação Front-end
-# Terminal 1 (API Back-end):
+On Windows, use `Copy-Item .env.example .env` in PowerShell.
+
+In separate terminals:
+
+```bash
 npm run dev:api
+```
 
-# Terminal 2 (Front-end Vite):
+```bash
 npm run dev
 ```
 
-Acesse no seu navegador:
-- **Front-end:** [http://127.0.0.1:5173/](http://127.0.0.1:5173/)
-- **API Health Check:** [http://127.0.0.1:3001/api/health](http://127.0.0.1:3001/api/health)
-- **API Stats:** [http://127.0.0.1:3001/api/stats](http://127.0.0.1:3001/api/stats)
+UI: http://127.0.0.1:5173  
+API: http://127.0.0.1:3001/api/health
 
----
+The provided database credentials are for local development. Keep real credentials in an untracked `.env`.
 
-## 🧪 Testes Automatizados
+## API overview
 
-O projeto conta com suíte abrangente de testes automatizados unitários e de integração:
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| GET | `/api/health` | Service and database status |
+| GET | `/api/stats` | Database and catalog metrics |
+| GET | `/api/dashboard` | Dashboard data |
+| GET | `/api/games?q=&store=&genre=` | Filtered game catalog |
+| GET | `/api/search?q=` | Search suggestions |
+| GET | `/api/genres` | Genre summaries |
+| GET | `/api/games/:slug` | Game details |
+| GET | `/api/games/:slug/history` | Historical ranking data |
+| GET | `/api/compare?a=&b=` | Comparison between two game slugs |
+
+Example:
 
 ```bash
-# Executar todos os testes
-npm test
-
-# Executar build de produção
-npm run build
+curl "http://127.0.0.1:3001/api/compare?a=elden-ring&b=cyberpunk-2077"
 ```
 
----
+## Checks
 
-## 🔒 Segurança e Boas Práticas
+```bash
+npm test
+npm run build
+npm run test:sites
+```
 
-- Arquivo `.env` incluído no `.gitignore` para impedir vazamento de credenciais.
-- `.env.example` fornecido com valores padrão seguros de desenvolvimento local.
-- Tratamento centralizado de erros e resiliência com fallback automático para operação contínua.
+The database integration tests use pg-mem. They complement local PostgreSQL checks; they are not evidence of production deployment or a production database load test.
 
+## Screenshots
 
+![SteamTwo dashboard](screenshots/dashboard.png)
+
+[Comparison](screenshots/compare.png) · [Catalog](screenshots/catalog_genres.png) · [Rankings](screenshots/rankings.png)
+
+## Repository guide
+
+- `server/`, `migrations/` and `tests/`: backend review entry points.
+- `src/`: UI and API client.
+- `screenshots/`: application screenshots.
+- `README.pt-BR.md`: preserved Portuguese project description.
+- `Relatorio_SteamTwo_Grupo.docx` and `generate_docx.py`: academic report and its generator.
+- `design-qa.md`: design review notes.
+- `worker/`, `.openai/` and `scripts/prepare-sites-build.mjs`: existing hosting integration.
+
+This is an academic portfolio project. It does not claim commercial users, production-scale traffic or exclusive authorship of the original codebase.
