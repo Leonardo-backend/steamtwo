@@ -1,0 +1,6 @@
+# Keep the language summary focused on application code.
+# The Python file generates an academic report; it is not part of the backend.
+generate_docx.py linguist-documentation
+*.docx linguist-documentation
+screenshots/** linguist-documentation
+data/steam-cache/** linguist-generated
